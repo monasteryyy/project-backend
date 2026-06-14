@@ -11,6 +11,12 @@ export class CreateTaskDto {
 
   @IsString()
   description!: string;
+  
+  @IsString()
+  category!: string;
+
+  @IsString()
+  location!: string;
 
   @IsIn(['HOUR', 'DAY'])
   paymentType!: string;

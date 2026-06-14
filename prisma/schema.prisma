@@ -25,9 +25,15 @@ model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String
+
+  category String
+  location String
+
   paymentType String
   amount      Float
+ 
   status      String   @default("PUBLISHED")
+  createdAT   DateTime @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
