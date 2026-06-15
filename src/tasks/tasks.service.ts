@@ -13,8 +13,22 @@ export class TasksService {
     });
   }
 
-  findAll() {
-    return this.prisma.task.findMany();
+  findAll(
+    category?: string,
+    location?: string,
+    minAmount?: number,
+) {
+    return this.prisma.task.findMany({
+      where: {
+         category: category,
+         location: location,
+         amount: minAmount
+          ?{
+            gte: minAmount,
+          }
+          :undefined,
+      }
+    });
   }
 
   findOne(id: number) {
