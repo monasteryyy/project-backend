@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import {PrismaService} from '../prisma/prisma.service'
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) {}
 
   create(createTaskDto: CreateTaskDto) {
     return this.prisma.task.create({
@@ -13,21 +13,17 @@ export class TasksService {
     });
   }
 
-  findAll(
-    category?: string,
-    location?: string,
-    minAmount?: number,
-) {
+  findAll(category?: string, location?: string, minAmount?: number) {
     return this.prisma.task.findMany({
       where: {
-         category: category,
-         location: location,
-         amount: minAmount
-          ?{
-            gte: minAmount,
-          }
-          :undefined,
-      }
+        category: category,
+        location: location,
+        amount: minAmount
+          ? {
+              gte: minAmount,
+            }
+          : undefined,
+      },
     });
   }
 
@@ -39,7 +35,7 @@ export class TasksService {
 
   update(id: number, updateTaskDto: UpdateTaskDto) {
     return this.prisma.task.update({
-      where:{ id },
+      where: { id },
       data: updateTaskDto,
     });
   }

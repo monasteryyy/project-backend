@@ -1,9 +1,4 @@
-import {
-   IsString,
-  IsNumber,
-  IsIn,
-  Min,
-} from 'class-validator';
+import { IsString, IsNumber, IsIn, Min } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -11,7 +6,7 @@ export class CreateTaskDto {
 
   @IsString()
   description!: string;
-  
+
   @IsString()
   category!: string;
 
@@ -29,5 +24,3 @@ export class CreateTaskDto {
   @Min(1)
   userId!: number;
 }
-
-

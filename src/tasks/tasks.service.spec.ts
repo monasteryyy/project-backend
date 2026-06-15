@@ -12,8 +12,8 @@ describe('TasksService', () => {
         TasksService,
         {
           provide: PrismaService,
-          useValue:{
-            task:{
+          useValue: {
+            task: {
               findMany: jest.fn(),
             },
           },
@@ -33,7 +33,7 @@ describe('TasksService', () => {
     expect(service).toBeDefined();
   });
 
-    it('should filter tasks by category', async () => {
+  it('should filter tasks by category', async () => {
     jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
 
     await service.findAll('Mascotas');
@@ -47,7 +47,7 @@ describe('TasksService', () => {
     });
   });
 
-   it('should filter tasks by location', async () => {
+  it('should filter tasks by location', async () => {
     jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
 
     await service.findAll(undefined, 'Bogotá');
@@ -77,73 +77,64 @@ describe('TasksService', () => {
   });
 
   it('should handle non-existing location filter', async () => {
-  jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
+    jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
 
-  const result = await service.findAll(undefined, 'Antartida');
+    const result = await service.findAll(undefined, 'Antartida');
 
-  expect(prismaService.task.findMany).toHaveBeenCalledWith({
-    where: {
-      category: undefined,
-      location: 'Antartida',
-      amount: undefined,
-    },
+    expect(prismaService.task.findMany).toHaveBeenCalledWith({
+      where: {
+        category: undefined,
+        location: 'Antartida',
+        amount: undefined,
+      },
+    });
+
+    expect(result).toEqual([]);
   });
-
-  expect(result).toEqual([]);
-});
 
   it('should return empty result when category does not exist', async () => {
-  jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
+    jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
 
-  const result = await service.findAll('CategoriaInexistente');
+    const result = await service.findAll('CategoriaInexistente');
 
-  expect(prismaService.task.findMany).toHaveBeenCalledWith({
-    where: {
-      category: 'CategoriaInexistente',
-      location: undefined,
-      amount: undefined,
-    },
-  });
-
-  expect(result).toEqual([]);
-});
-
-
-
-it('should return all tasks when no filters are provided', async () => {
-  jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
-
-  await service.findAll();
-
-  expect(prismaService.task.findMany).toHaveBeenCalledWith({
-    where: {
-      category: undefined,
-      location: undefined,
-      amount: undefined,
-    },
-  });
-});
-
-it('should apply multiple filters simultaneously', async () => {
-  jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
-
-  await service.findAll(
-    'Mascotas',
-    'Bogotá',
-    20,
-  );
-
-  expect(prismaService.task.findMany).toHaveBeenCalledWith({
-    where: {
-      category: 'Mascotas',
-      location: 'Bogotá',
-      amount: {
-        gte: 20,
+    expect(prismaService.task.findMany).toHaveBeenCalledWith({
+      where: {
+        category: 'CategoriaInexistente',
+        location: undefined,
+        amount: undefined,
       },
-    },
+    });
+
+    expect(result).toEqual([]);
   });
-});
 
+  it('should return all tasks when no filters are provided', async () => {
+    jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
 
+    await service.findAll();
 
+    expect(prismaService.task.findMany).toHaveBeenCalledWith({
+      where: {
+        category: undefined,
+        location: undefined,
+        amount: undefined,
+      },
+    });
+  });
+
+  it('should apply multiple filters simultaneously', async () => {
+    jest.spyOn(prismaService.task, 'findMany').mockResolvedValue([]);
+
+    await service.findAll('Mascotas', 'Bogotá', 20);
+
+    expect(prismaService.task.findMany).toHaveBeenCalledWith({
+      where: {
+        category: 'Mascotas',
+        location: 'Bogotá',
+        amount: {
+          gte: 20,
+        },
+      },
+    });
+  });
 });
