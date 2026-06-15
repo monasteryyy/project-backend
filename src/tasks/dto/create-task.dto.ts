@@ -1,8 +1,9 @@
 import {
-   IsString,
+  IsString,
   IsNumber,
   IsIn,
   Min,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateTaskDto {
@@ -12,16 +13,22 @@ export class CreateTaskDto {
   @IsString()
   description!: string;
 
-  @IsIn(['HOUR', 'DAY'])
+  @IsIn(['hora', 'dia'])
   paymentType!: string;
 
   @IsNumber()
   @Min(1)
-  amount!: number;
+  value!: number;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
 
   @IsNumber()
   @Min(1)
   userId!: number;
 }
-
-
