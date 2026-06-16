@@ -43,7 +43,7 @@ model Task {
   id           Int          @id @default(autoincrement())
   title        String       @db.VarChar(100)
   description  String       @db.Text
-  value        Decimal      @db.Decimal(10,2)
+  ammount      Decimal      @db.Decimal(10,2)
   paymentType  String       @map("payment_type") @db.VarChar(10)
   city         String?      @db.VarChar(20)
   address      String?      @db.VarChar(100)
@@ -56,6 +56,18 @@ model Task {
   user         User         @relation(fields: [userId], references: [id])
   postulations Postulation[]
   rating       Rating?
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+
+  category String
+  location String
+
+  paymentType String
+  amount      Float
+ 
+  status      String   @default("PUBLISHED")
+  createdAT   DateTime @default(now())
 
   @@map("task")
 }

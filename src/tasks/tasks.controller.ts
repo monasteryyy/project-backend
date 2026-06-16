@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -13,8 +22,16 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(
+    @Query('category') category?: string,
+    @Query('location') location?: string,
+    @Query('minAmount') minAmount?: string,
+  ) {
+    return this.tasksService.findAll(
+      category,
+      location,
+      minAmount ? Number(minAmount) : undefined,
+    );
   }
 
   @Get(':id')
