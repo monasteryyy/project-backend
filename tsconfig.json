@@ -21,14 +21,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-<<<<<<< HEAD
-    
-    "types": ["jest"] 
-  }
-}
-
-=======
+    "useDefineForClassFields": false,
     "types": ["jest", "node"]
   }
 }
->>>>>>> origin/Login
+
