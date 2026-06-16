@@ -24,12 +24,12 @@ export class TasksController {
   @Get()
   findAll(
     @Query('category') category?: string,
-    @Query('location') location?: string,
+    @Query('city') city?: string,
     @Query('minAmount') minAmount?: string,
   ) {
     return this.tasksService.findAll(
       category,
-      location,
+      city,
       minAmount ? Number(minAmount) : undefined,
     );
   }
