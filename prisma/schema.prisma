@@ -40,34 +40,24 @@ model Role {
 }
 
 model Task {
-  id           Int          @id @default(autoincrement())
-  title        String       @db.VarChar(100)
-  description  String       @db.Text
-  ammount      Decimal      @db.Decimal(10,2)
-  paymentType  String       @map("payment_type") @db.VarChar(10)
-  city         String?      @db.VarChar(20)
-  address      String?      @db.VarChar(100)
-  status       String       @default("publicada") @db.VarChar(20)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
-  deliveryDate DateTime?    @map("delivery_date")
-  userId       Int          @map("user_id")
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(100)
+  description  String    @db.Text
+  category     String                          // ← Campo para filtros
+  location     String                          // ← Campo para filtros
+  paymentType  String    @map("payment_type") @db.VarChar(10)
+  amount       Float                           // ← Para filtros de remuneración
+  city         String?   @db.VarChar(20)      // ← Tu campo (opcional, si lo usas)
+  address      String?   @db.VarChar(100)     // ← Tu campo
+  status       String    @default("publicada") @db.VarChar(20)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deliveryDate DateTime? @map("delivery_date")
+  userId       Int       @map("user_id")
   
   user         User         @relation(fields: [userId], references: [id])
   postulations Postulation[]
   rating       Rating?
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-
-  category String
-  location String
-
-  paymentType String
-  amount      Float
- 
-  status      String   @default("PUBLISHED")
-  createdAT   DateTime @default(now())
 
   @@map("task")
 }

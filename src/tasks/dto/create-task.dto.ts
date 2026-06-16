@@ -18,7 +18,7 @@ export class CreateTaskDto {
 
   @IsNumber()
   @Min(1)
-  value!: number;
+  amount!: number;
 
   @IsOptional()
   @IsString()
