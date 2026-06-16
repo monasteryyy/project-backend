@@ -52,7 +52,7 @@ model Task {
   city         String?      @db.VarChar(20)
   address      String?      @db.VarChar(100)
 
-  status       String       @default("publicada") @db.VarChar(20)
+  status       String       @default("Creada") @db.VarChar(20)
 
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
@@ -63,7 +63,24 @@ model Task {
   user         User         @relation(fields: [userId], references: [id])
   postulations Postulation[]
   rating       Rating?
+
+  history TaskHistory[]
+  
   @@map("task")
+}
+
+model TaskHistory {
+  id         Int      @id @default(autoincrement())
+  taskId     Int      @map("task_id")
+
+  oldStatus  String   @map("old_status") @db.VarChar(20)
+  newStatus  String   @map("new_status") @db.VarChar(20)
+
+  changedAt  DateTime @default(now()) @map("changed_at")
+
+  task       Task     @relation(fields: [taskId], references: [id])
+
+  @@map("task_history")
 }
 
 model Postulation {
@@ -95,3 +112,4 @@ model Rating {
 
   @@map("rating")
 }
+
