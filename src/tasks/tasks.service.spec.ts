@@ -36,13 +36,13 @@ describe('TasksService', () => {
     expect(service).toBeDefined();
   });
   const validTask = {
-  title: ' Walk the dog ',
-  description: ' One hour walk ',
-  category: ' Pets ',
-  location: ' Bogotá ',
-  paymentType: 'HOUR',
-  amount: 20,
-  userId: 1,
+    title: ' Walk the dog ',
+    description: ' One hour walk ',
+    category: ' Pets ',
+    location: ' Bogotá ',
+    paymentType: 'HOUR',
+    amount: 20,
+    userId: 1,
   };
   const cases = [
     {
@@ -58,7 +58,7 @@ describe('TasksService', () => {
       },
       shouldThrow: false,
     },
-  
+
     {
       name: 'User publishes a house cleaning task',
       dto: {
@@ -72,7 +72,7 @@ describe('TasksService', () => {
       },
       shouldThrow: false,
     },
-  
+
     {
       name: 'User enters amount equal to zero',
       dto: {
@@ -87,7 +87,7 @@ describe('TasksService', () => {
       shouldThrow: true,
       message: 'Amount must be greater than zero',
     },
-  
+
     {
       name: 'User enters negative amount',
       dto: {
@@ -102,7 +102,7 @@ describe('TasksService', () => {
       shouldThrow: true,
       message: 'Amount must be greater than zero',
     },
-  
+
     {
       name: 'User enters invalid payment type',
       dto: {
@@ -117,7 +117,7 @@ describe('TasksService', () => {
       shouldThrow: true,
       message: 'Invalid payment type',
     },
-  
+
     {
       name: 'User enters decimal payment amount',
       dto: {
@@ -131,7 +131,7 @@ describe('TasksService', () => {
       },
       shouldThrow: false,
     },
-  
+
     {
       name: 'User enters very large payment amount',
       dto: {
@@ -174,85 +174,85 @@ describe('TasksService', () => {
       message: 'Description is required',
     },
     {
-        name: 'empty title',
-        dto: {
-            ...validTask,
-            title: '   ',
-        },
-        shouldThrow: true,
-        message: 'Title is required',
+      name: 'empty title',
+      dto: {
+        ...validTask,
+        title: '   ',
+      },
+      shouldThrow: true,
+      message: 'Title is required',
     },
     {
-        name: 'empty description',
-        dto: {
-            ...validTask,
-            description: '',
-        },
-        shouldThrow: true,
-        message: 'Description is required',
+      name: 'empty description',
+      dto: {
+        ...validTask,
+        description: '',
+      },
+      shouldThrow: true,
+      message: 'Description is required',
     },
     {
-        name: 'empty category',
-        dto: {
-            ...validTask,
-            category: '',
-        },
-        shouldThrow: true,
-        message: 'Category is required',
+      name: 'empty category',
+      dto: {
+        ...validTask,
+        category: '',
+      },
+      shouldThrow: true,
+      message: 'Category is required',
     },
     {
-        name: 'invalid user id',
-        dto: {
-            ...validTask,
-            userId: 0,
-        },
-        shouldThrow: true,
-        message: 'Invalid user',
+      name: 'invalid user id',
+      dto: {
+        ...validTask,
+        userId: 0,
+      },
+      shouldThrow: true,
+      message: 'Invalid user',
     },
     {
-        name: 'negative user id',
-        dto: {
-            ...validTask,
-            userId: -5,
-        },
-        shouldThrow: true,
-        message: 'Invalid user',
+      name: 'negative user id',
+      dto: {
+        ...validTask,
+        userId: -5,
+      },
+      shouldThrow: true,
+      message: 'Invalid user',
     },
     {
-        name: 'empty category with spaces',
-        dto: {
-            ...validTask,
-            category: '      ',
-        },
-        shouldThrow: true,
-        message: 'Category is required',
+      name: 'empty category with spaces',
+      dto: {
+        ...validTask,
+        category: '      ',
+      },
+      shouldThrow: true,
+      message: 'Category is required',
     },
     {
-        name: 'empty location',
-        dto: {
-            ...validTask,
-            location: '',
-        },
-        shouldThrow: true,
-        message: 'Location is required',
+      name: 'empty location',
+      dto: {
+        ...validTask,
+        location: '',
+      },
+      shouldThrow: true,
+      message: 'Location is required',
     },
     {
-        name: 'amount is NaN',
-        dto: {
-            ...validTask,
-            amount: Number.NaN,
-        },
-        shouldThrow: true,
-        message: 'Invalid amount',
+      name: 'amount is NaN',
+      dto: {
+        ...validTask,
+        amount: Number.NaN,
+      },
+      shouldThrow: true,
+      message: 'Invalid amount',
     },
     {
-        name: 'amount is Infinity',
-        dto: {
-            ...validTask,
-            amount: Number.POSITIVE_INFINITY,
-        },
-        shouldThrow: true,
-        message: 'Invalid amount',
+      name: 'amount is Infinity',
+      dto: {
+        ...validTask,
+        amount: Number.POSITIVE_INFINITY,
+      },
+      shouldThrow: true,
+      message: 'Invalid amount',
     },
   ];
 
@@ -290,10 +290,8 @@ describe('TasksService', () => {
         location: testCase.dto.location.trim(),
       });
     } else {
-      expect(() => service.create(testCase.dto)).toThrow(
-        testCase.message,
-      );
-      
+      expect(() => service.create(testCase.dto)).toThrow(testCase.message);
+
       expect(prismaMock.task.create).not.toHaveBeenCalled();
     }
   });

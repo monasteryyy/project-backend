@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException, BadRequestException  } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn(),
@@ -16,7 +19,17 @@ import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prismaService: PrismaService;
+  let prismaService: {
+    user: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      update: jest.Mock;
+    };
+    role: {
+      findUnique: jest.Mock;
+    };
+  };
+});
 
   const mockUser = {
     id: 1,
@@ -77,7 +90,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    prismaService = module.get(PrismaService);
   });
 
   afterEach(() => {
@@ -147,7 +160,7 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if password is incorrect', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser as any);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(
@@ -177,50 +190,51 @@ describe('AuthService', () => {
     });
   });
   describe('changePassword', () => {
-  const mockChangePasswordDto = {
-    currentPassword: 'MiPassword123!',
-    newPassword: 'NewPassword456!',
-  };
+    const mockChangePasswordDto = {
+      currentPassword: 'MiPassword123!',
+      newPassword: 'NewPassword456!',
+    };
 
+    it('should throw BadRequestException if new password equals current password', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-  it('should throw BadRequestException if new password equals current password', async () => {
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
-    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      await expect(
+        service.changePassword(1, {
+          currentPassword: 'MiPassword123!',
+          newPassword: 'MiPassword123!',
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
 
-    await expect(
-      service.changePassword(1, {
-        currentPassword: 'MiPassword123!',
-        newPassword: 'MiPassword123!',
-      }),
-    ).rejects.toThrow(BadRequestException);
-  });
+    it('should hash the new password and update it', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('new_hashed_password');
+      const updateSpy = jest
+        .spyOn(prismaService.user, 'update')
+        .mockResolvedValue(mockUser);
 
-  it('should hash the new password and update it', async () => {
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
-    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-    (bcrypt.hash as jest.Mock).mockResolvedValue('new_hashed_password');
-    const updateSpy = jest.spyOn(prismaService.user, 'update').mockResolvedValue(mockUser);
+      await service.changePassword(1, mockChangePasswordDto);
 
-    await service.changePassword(1, mockChangePasswordDto);
+      expect(bcrypt.hash).toHaveBeenCalledWith('NewPassword456!', 10);
+      expect(updateSpy).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { password: 'new_hashed_password' },
+      });
+    });
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('NewPassword456!', 10);
-    expect(updateSpy).toHaveBeenCalledWith({
-      where: { id: 1 },
-      data: { password: 'new_hashed_password' },
+    it('should return success message on successful password change', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('new_hashed_password');
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue(mockUser);
+
+      const result = await service.changePassword(1, mockChangePasswordDto);
+
+      expect(result).toEqual({
+        message: 'Contraseña actualizada exitosamente',
+      });
     });
   });
-
-  it('should return success message on successful password change', async () => {
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
-    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-    (bcrypt.hash as jest.Mock).mockResolvedValue('new_hashed_password');
-    jest.spyOn(prismaService.user, 'update').mockResolvedValue(mockUser);
-
-    const result = await service.changePassword(1, mockChangePasswordDto);
-
-    expect(result).toEqual({
-      message: 'Contraseña actualizada exitosamente',
-    });
-  });
-});
 });

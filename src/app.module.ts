@@ -8,7 +8,13 @@ import { AuthModule } from './auth/auth.module';
 import { PostulationsModule } from './postulations/postulations.module';
 
 @Module({
-  imports: [UsersModule, PrismaModule, TasksModule, AuthModule, PostulationsModule],
+  imports: [
+    UsersModule,
+    PrismaModule,
+    TasksModule,
+    AuthModule,
+    PostulationsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

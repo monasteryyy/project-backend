@@ -1,7 +1,8 @@
-
-import { Injectable, 
+import {
+  Injectable,
   BadRequestException,
-  NotFoundException, } from '@nestjs/common';
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -46,7 +47,7 @@ export class TasksService {
       },
     ];
 
-    const failedValidation = validations.find(v => !v.valid);
+    const failedValidation = validations.find((v) => !v.valid);
 
     if (failedValidation) {
       throw new BadRequestException(failedValidation.message);
@@ -106,24 +107,21 @@ export class TasksService {
     const updatedTask = await this.prisma.task.update({
       where: { id },
       data: {
-      status: newStatus,
+        status: newStatus,
       },
     });
 
     await this.prisma.taskHistory.create({
       data: {
-      taskId: task.id,
-      oldStatus: task.status,
-      newStatus: newStatus,
+        taskId: task.id,
+        oldStatus: task.status,
+        newStatus: newStatus,
       },
     });
-       return updatedTask;
+    return updatedTask;
   }
-  
-  private validateTransition(
-    current: string,
-    next: string,
-  ) {
+
+  private validateTransition(current: string, next: string) {
     if (current === 'Finalizada') {
       throw new BadRequestException(
         'No se puede modificar una tarea finalizada',
@@ -136,10 +134,7 @@ export class TasksService {
       );
     }
 
-    if (
-      current === 'Creada' &&
-      next === 'Finalizada'
-    ) {
+    if (current === 'Creada' && next === 'Finalizada') {
       throw new BadRequestException(
         'No se puede pasar de Creada a Finalizada directamente',
       );
@@ -156,10 +151,6 @@ export class TasksService {
       },
     });
   }
-
-
-
-
 
   remove(id: number) {
     return this.prisma.task.delete({
