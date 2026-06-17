@@ -1,3 +1,4 @@
+
 import { Injectable, 
   BadRequestException,
   NotFoundException, } from '@nestjs/common';
@@ -10,8 +11,57 @@ export class TasksService {
   constructor(private prisma: PrismaService) {}
 
   create(createTaskDto: CreateTaskDto) {
+    const validations = [
+      {
+        valid: createTaskDto.title.trim(),
+        message: 'Title is required',
+      },
+      {
+        valid: createTaskDto.description.trim(),
+        message: 'Description is required',
+      },
+      {
+        valid: createTaskDto.category.trim(),
+        message: 'Category is required',
+      },
+      {
+        valid: createTaskDto.location.trim(),
+        message: 'Location is required',
+      },
+      {
+        valid: Number.isFinite(createTaskDto.amount),
+        message: 'Invalid amount',
+      },
+      {
+        valid: createTaskDto.userId > 0,
+        message: 'Invalid user',
+      },
+      {
+        valid: createTaskDto.amount > 0,
+        message: 'Amount must be greater than zero',
+      },
+      {
+        valid: ['HOUR', 'DAY'].includes(createTaskDto.paymentType),
+        message: 'Invalid payment type',
+      },
+    ];
+
+    const failedValidation = validations.find(v => !v.valid);
+
+    if (failedValidation) {
+      throw new BadRequestException(failedValidation.message);
+    }
+
+    const task = {
+      ...createTaskDto,
+      title: createTaskDto.title.trim(),
+      description: createTaskDto.description.trim(),
+      category: createTaskDto.category.trim(),
+      location: createTaskDto.location.trim(),
+    };
+
     return this.prisma.task.create({
-      data: createTaskDto,
+      data: task,
     });
   }
 
