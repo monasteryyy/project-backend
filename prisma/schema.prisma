@@ -5,7 +5,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -13,28 +12,104 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id           Int         @id @default(autoincrement())
+  name         String      @db.VarChar(100)
+  email        String      @unique @db.VarChar(100)
+  telephone    String      @db.VarChar(20)
+  password     String      @db.VarChar(255)
+  address      String?     @db.VarChar(160)
+  verified     Boolean?    @default(false)
+  registerAt   DateTime    @default(now()) @map("register_at")
+  rolId        Int         @map("rol_id")
+  
+  role         Role        @relation(fields: [rolId], references: [id])
+  tasks        Task[]
+  postulations Postulation[]
+  ratingsSent  Rating[]    @relation("sender")
+  ratingsReceived Rating[] @relation("receiver")
 
-  tasks Task[]
+  @@map("user")
 }
 
+model Role {
+  id        Int     @id @default(autoincrement())
+  roleName  String  @unique @db.VarChar(50) @map("role_name")
+  users     User[]
+
+  @@map("role")
+}
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
+  id           Int          @id @default(autoincrement())
+  title        String       @db.VarChar(100)
+  description  String       @db.Text
 
-  category String
-  location String
+  category     String?      @db.VarChar(50)
 
-  paymentType String
-  amount      Float
- 
-  status      String   @default("PUBLISHED")
-  createdAT   DateTime @default(now())
+  value        Decimal      @db.Decimal(10,2)
+  paymentType  String       @map("payment_type") @db.VarChar(10)
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  city         String?      @db.VarChar(20)
+  address      String?      @db.VarChar(100)
+
+  status       String       @default("Creada") @db.VarChar(20)
+
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deliveryDate DateTime?    @map("delivery_date")
+
+  userId       Int          @map("user_id")
+
+  user         User         @relation(fields: [userId], references: [id])
+  postulations Postulation[]
+  rating       Rating?
+
+  history TaskHistory[]
+  
+  @@map("task")
 }
+
+model TaskHistory {
+  id         Int      @id @default(autoincrement())
+  taskId     Int      @map("task_id")
+
+  oldStatus  String   @map("old_status") @db.VarChar(20)
+  newStatus  String   @map("new_status") @db.VarChar(20)
+
+  changedAt  DateTime @default(now()) @map("changed_at")
+
+  task       Task     @relation(fields: [taskId], references: [id])
+
+  @@map("task_history")
+}
+
+model Postulation {
+  id              Int      @id @default(autoincrement())
+  applicationDate DateTime @default(now()) @map("application_date")
+  status          String   @default("pendiente") @db.VarChar(10)
+  taskId          Int      @map("task_id")
+  userId          Int      @map("user_id")
+  
+  task            Task     @relation(fields: [taskId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, taskId])
+  @@map("postulation")
+}
+
+model Rating {
+  id             Int      @id @default(autoincrement())
+  score          Int
+  comments       String?  @db.VarChar(300)
+  date           DateTime @default(now())
+  taskId         Int      @unique @map("task_id")
+  senderUserId   Int      @map("sender_user_id")
+  receiverUserId Int      @map("receiver_user_id")
+  
+  task           Task     @relation(fields: [taskId], references: [id])
+  senderUser     User     @relation("sender", fields: [senderUserId], references: [id])
+  receiverUser   User     @relation("receiver", fields: [receiverUserId], references: [id])
+
+  @@map("rating")
+}
+
