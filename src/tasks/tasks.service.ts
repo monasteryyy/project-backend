@@ -65,12 +65,12 @@ export class TasksService {
     });
   }
 
-  findAll(category?: string, city?: string, minAmount?: number) {
+  findAll(category?: string, location?: string, minAmount?: number) {
     return this.prisma.task.findMany({
       where: {
         category: category,
-        city: city,
-        value: minAmount
+        location: location,
+        amount: minAmount
           ? {
               gte: minAmount,
             }

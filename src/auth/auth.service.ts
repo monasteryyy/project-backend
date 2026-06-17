@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { BadRequestException } from '@nestjs/common';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -96,4 +98,36 @@ export class AuthService {
     const payload = { sub: userId, email, role };
     return this.jwtService.sign(payload);
   }
+  async changePassword(userId: number, changePasswordDto: ChangePasswordDto) {
+  const { currentPassword, newPassword } = changePasswordDto;
+
+  const user = await this.prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new UnauthorizedException('Usuario no encontrado');
+  }
+
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Contraseña actual incorrecta');
+  }
+
+  if (currentPassword === newPassword) {
+    throw new BadRequestException('La nueva contraseña debe ser diferente a la actual');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await this.prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+
+  return {
+    message: 'Contraseña actualizada exitosamente',
+  };
+}
 }

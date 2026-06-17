@@ -40,26 +40,21 @@ model Role {
 }
 
 model Task {
-  id           Int          @id @default(autoincrement())
-  title        String       @db.VarChar(100)
-  description  String       @db.Text
-
-  category     String?      @db.VarChar(50)
-
-  value        Decimal      @db.Decimal(10,2)
-  paymentType  String       @map("payment_type") @db.VarChar(10)
-
-  city         String?      @db.VarChar(20)
-  address      String?      @db.VarChar(100)
-
-  status       String       @default("Creada") @db.VarChar(20)
-
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
-  deliveryDate DateTime?    @map("delivery_date")
-
-  userId       Int          @map("user_id")
-
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(100)
+  description  String    @db.Text
+  category     String                          
+  location     String                          
+  paymentType  String    @map("payment_type") @db.VarChar(10)
+  amount       Float                           
+  city         String?   @db.VarChar(20)   
+  address      String?   @db.VarChar(100)     
+  status       String    @default("publicada") @db.VarChar(20)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deliveryDate DateTime? @map("delivery_date")
+  userId       Int       @map("user_id")
+  
   user         User         @relation(fields: [userId], references: [id])
   postulations Postulation[]
   rating       Rating?
