@@ -31,10 +31,12 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(
-    @Request() req,
+    @Request() req: { user: { sub: string } },
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    const userId = req.user.sub;
-    return this.authService.changePassword(userId, changePasswordDto);
+    return this.authService.changePassword(
+      Number(req.user.sub),
+      changePasswordDto,
+    );
   }
 }

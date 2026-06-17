@@ -19,7 +19,17 @@ import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prismaService: PrismaService;
+  let prismaService: {
+    user: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      update: jest.Mock;
+    };
+    role: {
+      findUnique: jest.Mock;
+    };
+  };
+});
 
   const mockUser = {
     id: 1,
@@ -80,7 +90,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    prismaService = module.get(PrismaService);
   });
 
   afterEach(() => {
@@ -150,9 +160,7 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if password is incorrect', async () => {
-      jest
-        .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(mockUser as any);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(
