@@ -29,7 +29,6 @@ describe('AuthService', () => {
       findUnique: jest.Mock;
     };
   };
-});
 
   const mockUser = {
     id: 1,
