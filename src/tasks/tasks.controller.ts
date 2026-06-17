@@ -50,17 +50,13 @@ export class TasksController {
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ) {
-    return this.tasksService.updateStatus(
-      +id,
-      updateTaskStatusDto.status,
-    );
+    return this.tasksService.updateStatus(+id, updateTaskStatusDto.status);
   }
 
   @Get(':id/history')
   getHistory(@Param('id') id: string) {
     return this.tasksService.getHistory(+id);
   }
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -13,9 +13,7 @@ import { UpdatePostulationDto } from './dto/update-postulation.dto';
 
 @Controller('postulations')
 export class PostulationsController {
-  constructor(
-    private readonly postulationsService: PostulationsService,
-  ) {}
+  constructor(private readonly postulationsService: PostulationsService) {}
 
   @Post()
   create(@Body() createPostulationDto: CreatePostulationDto) {
@@ -37,10 +35,7 @@ export class PostulationsController {
     @Param('id') id: string,
     @Body() updatePostulationDto: UpdatePostulationDto,
   ) {
-    return this.postulationsService.update(
-      +id,
-      updatePostulationDto,
-    );
+    return this.postulationsService.update(+id, updatePostulationDto);
   }
 
   @Delete(':id')
