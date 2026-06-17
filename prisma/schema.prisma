@@ -43,12 +43,12 @@ model Task {
   id           Int       @id @default(autoincrement())
   title        String    @db.VarChar(100)
   description  String    @db.Text
-  category     String                          // ← Campo para filtros
-  location     String                          // ← Campo para filtros
+  category     String                          
+  location     String                          
   paymentType  String    @map("payment_type") @db.VarChar(10)
-  amount       Float                           // ← Para filtros de remuneración
-  city         String?   @db.VarChar(20)      // ← Tu campo (opcional, si lo usas)
-  address      String?   @db.VarChar(100)     // ← Tu campo
+  amount       Float                           
+  city         String?   @db.VarChar(20)   
+  address      String?   @db.VarChar(100)     
   status       String    @default("publicada") @db.VarChar(20)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
@@ -59,7 +59,23 @@ model Task {
   postulations Postulation[]
   rating       Rating?
 
+  history TaskHistory[]
+  
   @@map("task")
+}
+
+model TaskHistory {
+  id         Int      @id @default(autoincrement())
+  taskId     Int      @map("task_id")
+
+  oldStatus  String   @map("old_status") @db.VarChar(20)
+  newStatus  String   @map("new_status") @db.VarChar(20)
+
+  changedAt  DateTime @default(now()) @map("changed_at")
+
+  task       Task     @relation(fields: [taskId], references: [id])
+
+  @@map("task_history")
 }
 
 model Postulation {
@@ -72,6 +88,7 @@ model Postulation {
   task            Task     @relation(fields: [taskId], references: [id])
   user            User     @relation(fields: [userId], references: [id])
 
+  @@unique([userId, taskId])
   @@map("postulation")
 }
 
@@ -90,3 +107,4 @@ model Rating {
 
   @@map("rating")
 }
+
