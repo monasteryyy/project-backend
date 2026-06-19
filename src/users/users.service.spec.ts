@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { describe, beforeEach, it, expect, jest } from '@jest/globals'; // <- Corrección de tipos
 
 describe('UsersService', () => {
   let service: UsersService;

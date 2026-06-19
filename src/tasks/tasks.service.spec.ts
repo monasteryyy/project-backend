@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { TasksService } from './tasks.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service'; 
+import { describe, beforeEach, it, expect, jest } from '@jest/globals'; // <- Importación correcta desde Jest
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -256,22 +257,29 @@ describe('TasksService', () => {
     },
   ];
 
-  it.each(cases)('$name', async (testCase) => {
+it.each(cases)('$name', async (testCase: any) => {
     jest.clearAllMocks();
 
     console.log(testCase.name, testCase.shouldThrow);
 
     if (!testCase.shouldThrow) {
-      prismaMock.task.create.mockResolvedValue({
+      // 1. Nos aseguramos de interceptar tanto 'prismaMock' como 'prisma.task.create' directamente
+      const mockResult = {
         ...testCase.dto,
         title: testCase.dto.title.trim(),
         description: testCase.dto.description.trim(),
         category: testCase.dto.category.trim(),
         location: testCase.dto.location.trim(),
-      });
+      };
 
+      // Forzamos el mock a retornar el objeto esperado
+      prismaMock.task.create.mockResolvedValue(mockResult);
+
+      // 2. Ejecutamos el servicio de tareas
       const result = await service.create(testCase.dto);
 
+      // Si 'result' sigue llegando undefined, significa que el método 'create' en 
+      // 'src/tasks/tasks.service.ts' no tiene un 'return' apuntando a prisma.task.create
       expect(prismaMock.task.create).toHaveBeenCalledWith({
         data: {
           ...testCase.dto,
