@@ -1,10 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { describe, beforeEach, it, expect, jest } from '@jest/globals'; // Importación limpia de Jest
 
 describe('UsersController', () => {
   let controller: UsersController;
+
+  const prismaMock = {
+    user: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,6 +36,8 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {

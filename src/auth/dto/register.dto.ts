@@ -1,13 +1,12 @@
 import {
   IsString,
   IsEmail,
+  MinLength,
+  Matches,
   IsOptional,
-  IsBoolean,
-  IsInt,
-  Min,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterDto {
   @IsString()
   name!: string;
 
@@ -18,17 +17,16 @@ export class CreateUserDto {
   telephone!: string;
 
   @IsString()
+  @MinLength(8)
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
+    message: 'Password must have at least 1 letter, 1 number, and 1 symbol',
+  })
   password!: string;
 
-  @IsOptional()
   @IsString()
   address?: string;
 
   @IsOptional()
-  @IsBoolean()
-  verified?: boolean;
-
-  @IsInt()
-  @Min(1)
-  rolId!: number;
+  @IsString()
+  rolName?: string;
 }

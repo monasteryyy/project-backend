@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { describe, beforeEach, it, expect, jest } from '@jest/globals'; // <- Corrección de tipos
@@ -6,24 +7,30 @@ import { describe, beforeEach, it, expect, jest } from '@jest/globals'; // <- Co
 describe('UsersService', () => {
   let service: UsersService;
 
+  const prismaMock = {
+    user: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
           provide: PrismaService,
-          useValue: {
-            user: {
-              findMany: jest.fn().mockImplementation(() => Promise.resolve([])),
-              findUnique: jest.fn(),
-              create: jest.fn(),
-            },
-          },
+          useValue: prismaMock,
         },
       ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
