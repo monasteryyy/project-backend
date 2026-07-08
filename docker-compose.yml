@@ -3,7 +3,7 @@ services:
     image: postgres:17
     environment:
       POSTGRES_USER: monastery
-      POSTGRES_PASSWORD: 123456789
+      POSTGRES_PASSWORD: monasteryyy  
       POSTGRES_DB: monastery
     ports:
       - "5432:5432"

@@ -1,13 +1,14 @@
-import { IsString, MinLength, Matches } from 'class-validator';
+import { IsString, Length, Matches } from 'class-validator';
 
 export class ChangePasswordDto {
   @IsString()
+  @Length(8, 50)
   currentPassword!: string;
 
   @IsString()
-  @MinLength(8)
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-    message: 'Password must have at least 1 letter, 1 number, and 1 symbol',
+  @Length(8, 50)
+  @Matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])/, {
+    message: 'La contraseña debe tener al menos una letra, un número y un símbolo',
   })
   newPassword!: string;
 }

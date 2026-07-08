@@ -13,6 +13,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
@@ -29,8 +30,31 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@Request() req: any) {
+    const userId = req.user?.id || req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('Usuario no autenticado');
+    }
+    return this.usersService.findOne(userId);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @Request() req: any,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    const userId = req.user?.id || req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('Usuario no autenticado');
+    }
+    return this.usersService.update(userId, updateProfileDto);
+  }
+
   @Get('me/tasks')
-  @UseGuards(JwtAuthGuard)  // ← Agrega esto
+  @UseGuards(JwtAuthGuard)
   async getMyTasks(@Request() req: any) {
     const userId = req.user?.id || req.user?.sub;
     if (!userId) {
