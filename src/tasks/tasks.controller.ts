@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -59,7 +62,11 @@ export class TasksController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: string, @Request() req: any) {
+    console.log('📥 Request.user:', req.user);
+    const userId = req.user?.id || req.user?.sub;
+    console.log('🗑️ ID de tarea:', id, 'Usuario autenticado (userId):', userId);
+    return this.tasksService.remove(+id, userId);
   }
 }

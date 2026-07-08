@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +27,16 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('me/tasks')
+  @UseGuards(JwtAuthGuard)  // ← Agrega esto
+  async getMyTasks(@Request() req: any) {
+    const userId = req.user?.id || req.user?.sub;
+    if (!userId) {
+      throw new UnauthorizedException('Usuario no autenticado');
+    }
+    return this.usersService.getTasksByUser(userId);
   }
 
   @Get(':id')

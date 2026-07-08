@@ -11,12 +11,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PrismaModule,
     PassportModule,
     JwtModule.register({
-      secret:
-        process.env.JWT_SECRET || 'temporary-secret-key-change-in-production',
+      secret: process.env.JWT_SECRET || 'temporary-secret-key-change-in-production',
       signOptions: { expiresIn: '7d' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy], // ← Asegura que JwtStrategy está aquí
 })
 export class AuthModule {}

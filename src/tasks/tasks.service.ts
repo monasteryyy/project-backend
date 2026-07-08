@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -76,6 +77,17 @@ export class TasksService {
               gte: minAmount,
             }
           : undefined,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        category: true,
+        location: true,
+        amount: true,
+        status: true,
+        createdAt: true,
+        userId: true,
       },
     });
   }
@@ -152,9 +164,27 @@ export class TasksService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.task.delete({
-      where: { id },
-    });
+async remove(id: number, userId: number) {
+  console.log('🔍 Service - ID:', id, 'userId:', userId);
+  
+  const task = await this.prisma.task.findUnique({
+    where: { id },
+  });
+
+  console.log('📋 Tarea encontrada:', task);
+  console.log('🔑 task.userId:', task?.userId, 'userId recibido:', userId);
+
+  if (!task) {
+    throw new NotFoundException('Tarea no encontrada');
   }
+
+  if (task.userId !== userId) {
+    console.log('❌ No coincide! task.userId:', task.userId, 'userId:', userId);
+    throw new UnauthorizedException('No tienes permiso para eliminar esta tarea');
+  }
+
+  return this.prisma.task.delete({
+    where: { id },
+  });
+}
 }

@@ -35,6 +35,13 @@ export class UsersService {
       where: { id },
     });
   }
+
+  async getTasksByUser(userId: number) {
+    return this.prisma.task.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }
 
 /*import { Injectable } from '@nestjs/common';
