@@ -92,9 +92,19 @@ export class TasksService {
     });
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.prisma.task.findUnique({
       where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            telephone: true,
+          },
+        },
+      },
     });
   }
 
@@ -164,27 +174,21 @@ export class TasksService {
     });
   }
 
-async remove(id: number, userId: number) {
-  console.log('🔍 Service - ID:', id, 'userId:', userId);
-  
-  const task = await this.prisma.task.findUnique({
-    where: { id },
-  });
+  async remove(id: number, userId: number) {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+    });
 
-  console.log('📋 Tarea encontrada:', task);
-  console.log('🔑 task.userId:', task?.userId, 'userId recibido:', userId);
+    if (!task) {
+      throw new NotFoundException('Tarea no encontrada');
+    }
 
-  if (!task) {
-    throw new NotFoundException('Tarea no encontrada');
+    if (task.userId !== userId) {
+      throw new UnauthorizedException('No tienes permiso para eliminar esta tarea');
+    }
+
+    return this.prisma.task.delete({
+      where: { id },
+    });
   }
-
-  if (task.userId !== userId) {
-    console.log('❌ No coincide! task.userId:', task.userId, 'userId:', userId);
-    throw new UnauthorizedException('No tienes permiso para eliminar esta tarea');
-  }
-
-  return this.prisma.task.delete({
-    where: { id },
-  });
-}
 }

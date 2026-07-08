@@ -6,6 +6,7 @@ import {
   HttpStatus,
   UseGuards,
   Request,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -31,12 +32,16 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   async changePassword(
-    @Request() req: { user: { sub: string } },
+    @Request() req: any,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    return this.authService.changePassword(
-      Number(req.user.sub),
-      changePasswordDto,
-    );
+   
+    const userId = req.user?.id || req.user?.sub;
+    
+    if (!userId) {
+      throw new UnauthorizedException('Usuario no autenticado');
+    }
+
+    return this.authService.changePassword(Number(userId), changePasswordDto);
   }
 }
