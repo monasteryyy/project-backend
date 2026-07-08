@@ -13,15 +13,19 @@ export class PostulationsService {
     });
   }
 
-  findAll() {
-    return this.prisma.postulation.findMany({
-      include: {
-        user: true,
-        task: true,
-      },
-    });
-  }
+findAll(taskId?: number, userId?: number) {
+  const where: any = {};
+  if (taskId) where.taskId = taskId;
+  if (userId) where.userId = userId;
 
+  return this.prisma.postulation.findMany({
+    where,
+    include: {
+      user: true,
+      task: true,
+    },
+  });
+}
   findOne(id: number) {
     return this.prisma.postulation.findUnique({
       where: { id },

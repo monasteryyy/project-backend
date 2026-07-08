@@ -14,5 +14,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
+    await this.ensureRoles();
+  }
+
+  private async ensureRoles() {
+    try {
+      const roles = ['ADMIN', 'USER'];
+      for (const roleName of roles) {
+        await this.role.upsert({
+          where: { roleName },
+          update: {},
+          create: { roleName },
+        });
+      }
+      console.log('✅ Roles asegurados en la base de datos');
+    } catch (error) {
+      console.error('❌ Error al asegurar roles:', error);
+    }
   }
 }

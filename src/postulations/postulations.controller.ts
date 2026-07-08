@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PostulationsService } from './postulations.service';
 import { CreatePostulationDto } from './dto/create-postulation.dto';
@@ -21,8 +22,14 @@ export class PostulationsController {
   }
 
   @Get()
-  findAll() {
-    return this.postulationsService.findAll();
+  findAll(
+    @Query('taskId') taskId?: string,
+    @Query('userId') userId?: string,
+  ) {
+    return this.postulationsService.findAll(
+      taskId ? Number(taskId) : undefined,
+      userId ? Number(userId) : undefined,
+    );
   }
 
   @Get(':id')
